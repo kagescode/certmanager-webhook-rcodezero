@@ -8,11 +8,13 @@ on:
     paths-ignore:
       - 'charts/**'
       - '.github/**'
+      - 'README.md'
   pull_request:
     branches: [ "main" ]
     paths-ignore:
       - 'charts/**'
       - '.github/**'
+      - 'README.md'
   workflow_dispatch: {}
 
 env:
