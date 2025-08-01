@@ -7,10 +7,12 @@ on:
     tags: [ 'v*.*.*' ]
     paths-ignore:
       - 'charts/**'
+      - '.github/**'
   pull_request:
     branches: [ "main" ]
     paths-ignore:
       - 'charts/**'
+      - '.github/**'
   workflow_dispatch: {}
 
 env:
