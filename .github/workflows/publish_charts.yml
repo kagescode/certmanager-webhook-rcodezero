@@ -5,6 +5,11 @@ permissions:
   packages: write
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'charts/**'
   pull_request:
     branches:
       - main
