@@ -14,9 +14,12 @@ Follow the [instructions](https://cert-manager.io/docs/installation/) using the 
 
 #### Using public helm chart
 ```bash
-helm repo add certmanager-webhook-rcodezero https://safespring-community.github.io/certmanager-webhook-rcodezero
-# Replace the groupName value with your desired domain
-helm install --namespace cert-manager certmanager-webhook-rcodezero certmanager-webhook-rcodezero/certmanager-webhook-rcodezero --set groupName=acme.yourdomain.tld
+helm install certmanager-webhook-rcodezero \
+  oci://ghcr.io/kagescode/helm-charts/certmanager-webhook-rcodezero \
+  --namespace cert-manager \
+  --create-namespace \
+  --set groupName=acme.yourdomain.tld \
+  --version 0.7.1
 ```
 
 ## Issuer/ClusterIssuer
