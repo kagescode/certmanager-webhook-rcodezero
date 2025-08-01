@@ -55,7 +55,7 @@ jobs:
               exit 1
             fi
             # push chart to OCI repo
-            TARGET="oci://ghcr.io/${{ github.repository_owner }}/helm-charts/$NAME"
+            TARGET="oci://ghcr.io/${{ github.repository_owner }}/helm-charts"
             echo "Pushing $PACKAGE_FILE to $TARGET"
             helm push "$PACKAGE_FILE" "$TARGET"
           done
