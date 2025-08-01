@@ -1,6 +1,14 @@
 name: Helm linter
 
-on: [push]
+on:
+  push:
+    paths:
+      - 'charts/**'
+  pull_request:
+    paths:
+      - "charts/**"
+    types: [ closed ]
+  workflow_dispatch: {}
 
 permissions:
   contents: read
