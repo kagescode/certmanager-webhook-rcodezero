@@ -1,7 +1,8 @@
 name: Publish charts
 
 permissions:
-  contents: write
+  contents: read
+  packages: write
 
 on:
   pull_request:
@@ -23,15 +24,33 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Configure Git
-        run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-
       - name: Install Helm
         uses: azure/setup-helm@v4
 
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.7.0
-        env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Login to GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build and push Helm charts as OCI
+        run: |
+          set -e
+          for chart in charts/*/; do
+            if [ ! -f "$chart/Chart.yaml" ]; then
+              echo "Skipping $chart (no Chart.yaml)"
+              continue
+            fi
+            # extract chart name for target repo
+            NAME=$(helm show chart "$chart" | awk '/^name:/ {print $2}')
+            # package the chart (creates .tgz in cwd)
+            helm package "$chart" --destination .
+            # find the generated package
+            PACKAGE_FILE=$(ls ${NAME}-*.tgz | head -n1)
+            if [ -z "$PACKAGE_FILE" ]; then
+              echo "Failed to find packaged chart for $NAME"
+              exit 1
+            fi
+            # push chart to OCI repo
+            TARGET="oci://ghcr.io/${{ github.repository }}/charts/$NAME"
+            echo "Pushing $PACKAGE_FILE to $TARGET"
+            helm push "$PACKAGE_FILE" "$TARGET"
+          done
